@@ -1,0 +1,96 @@
+---
+title: "Datos Hidrograficos de Rio Banano y Estrella"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Procedimientos para la creacion de Graficas
+
+# Primera grafica
+
+Con la función "plot" visualizamos los datos, usando el "inp" llamamos a la columna 2 del archivo, definimos la forma de la grafica y su color, para ponerle un titulo usamos el "main", nombre en el eje x "xlab" eje y "ylab" cerramos la funcion de la primera columna del rio estrella, en otra linea iniciamos con la funcion "lines" volvemos a llamar con "inp" la columna y el color.
+
+```{r cars}
+inp <-read.csv("FDC.csv", na.strings ="")
+
+#
+
+plot( 
+  inp[,2],type = "l", col="blue", 
+  xlab='Fechas',
+  ylab='Caudal en mm/dia',
+  main='Caudal del Rio Banano y Rio Estrella ',
+)
+lines(inp[,3],
+      
+      col="lightgreen") 
+
+```
+
+
+
+
+## Rio Estrella 1973-1983
+
+
+
+```{r}
+names(inp) <- c("fecha", "Estrella", "Banano")
+attach(inp)
+plot(Estrella, xlab='Fechas',
+  ylab='Caudal en mm/dia',
+  main='Rio Estrella ', col="blue")
+
+```
+
+## Rio Banano 1973-1983
+
+
+
+```{r}
+names(inp) <- c("fecha", "Estrella", "Banano")
+attach(inp)
+plot(Banano, 
+  xlab='Fechas',
+  ylab='Caudal en mm/dia',
+  main='Rio Banano ', col="pink")
+
+
+```
+
+## Comparación del Rio Estrella y Rio Banano
+
+Grafica del rio banano y estrella, usando "Teampdate" y el "INP" llamamos a la columna de las fechas y el orden de las fechas "format = "%d/%m/%Y")", con el MAQ lo visualizamos
+
+```{r}
+Tempdate <- strptime(inp[,1], format = "%d/%m/%Y")
+MAQ_Estrella <- tapply(Estrella, format(Tempdate, format= "%m"), FUN=sum)
+MAQ_Banano <- tapply(Estrella, format(Tempdate, format= "%m"), FUN=sum)
+MAQ_Banano
+plot(MAQ_Banano, ylim=c(100,3000), col=3,
+     xlab='Fechas',
+  ylab='Caudal en mm/dia',
+  main='Comparación de Rios Estrella(Rojos) y Rio Banano(verde)')
+lines(MAQ_Estrella, col=2)
+
+```
+
+
+## Correlación del Rio Banano y Rio estrella
+
+Utilizamos "corinp" para correlacionar los caudales de losdos rios
+
+```{r}
+
+corinp  <- cor(inp[,2:3], method="spearman")
+corinp
+plot(Estrella, Banano, col=2)
+
+inp.lm  <- lm(inp[,2] ~ inp[,3], data=inp)
+summary(inp.lm)
+plot(inp.lm)
+
+```
